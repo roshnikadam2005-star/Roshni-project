@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h1 class="page-title">Checkout</h1>
+
+    <div class="checkout-layout">
+      <div class="card-panel">
+        <h3>Order Items</h3>
+        <table class="cart-table">
+          <thead>
+            <tr><th>Book</th><th>Price</th><th>Qty</th><th>Total</th></tr>
+          </thead>
+          <tbody>
+            {% for line in lines %}
+            <tr>
+              <td>{{ line.book.title }}</td>
+              <td>Rs {{ '%.0f'|format(line.book.price) }}</td>
+              <td>{{ line.quantity }}</td>
+              <td>Rs {{ '%.0f'|format(line.line_total) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div class="cart-summary-row cart-summary-total" style="margin-top: 1rem">
+          <span>Total Amount</span>
+          <span>Rs {{ '%.0f'|format(total) }}</span>
+        </div>
+      </div>
+
+      <div class="card-panel">
+        <h3>Payment Options</h3>
+        <form id="payment-form" method="post" action="{{ url_for('main.process_payment') }}">
+          <div class="payment-options">
+            <label class="payment-card">
+              <input type="radio" name="payment_method" value="upi" checked />
+              <span>Google Pay (UPI)</span>
+            </label>
+            <label class="payment-card">
+              <input type="radio" name="payment_method" value="card" />
+              <span>Debit Card</span>
+            </label>
+          </div>
+
+          <div id="upi-fields">
+            <div class="form-group">
+              <label for="upi_id">UPI ID</label>
+              <input class="input" id="upi_id" name="upi_id" placeholder="yourname@upi" />
+            </div>
+            <p style="color: var(--color-muted); font-size: 0.85rem; margin-top: -0.5rem;">or scan QR in your app (demo mode).</p>
+          </div>
+
+          <div id="card-fields" hidden>
+            <div class="form-group">
+              <label for="card_number">Card Number</label>
+              <input class="input" id="card_number" name="card_number" maxlength="19" placeholder="1234 5678 9012 3456" />
+            </div>
+            <div class="form-group">
+              <label for="card_holder">Card Holder Name</label>
+              <input class="input" id="card_holder" name="card_holder" placeholder="Your Name" />
+            </div>
+            <div class="checkout-row">
+              <div class="form-group">
+                <label for="expiry_date">Expiry Date</label>
+                <input class="input" id="expiry_date" name="expiry_date" placeholder="MM/YY" />
+              </div>
+              <div class="form-group">
+                <label for="cvv">CVV</label>
+                <input class="input" id="cvv" name="cvv" maxlength="4" placeholder="123" />
+              </div>
+            </div>
+          </div>
+
+          <p id="payment-error" class="form-error" hidden></p>
+          <button type="submit" class="btn btn--primary btn--block" id="pay-btn">Pay Now</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/checkout.js') }}"></script>
+{% endblock %}
